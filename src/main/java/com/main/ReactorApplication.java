@@ -4,14 +4,19 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.main.model.Persona;
-import com.main.operator.creation.Creation;
-import com.main.operator.filtration.Filtration;
-import com.main.operator.transformation.Transformation;
+import com.main.reactor.combination.Combination;
+import com.main.reactor.conditionals.Conditional;
+import com.main.reactor.creation.Creation;
+import com.main.reactor.error.ErrorOn;
+import com.main.reactor.filtration.Filtration;
+import com.main.reactor.matematics.Matematics;
+import com.main.reactor.transformation.Transformation;
 
 import io.reactivex.Observable;
 import reactor.core.publisher.Flux;
@@ -21,6 +26,35 @@ import reactor.core.publisher.Mono;
 public class ReactorApplication implements CommandLineRunner {
 	
 	private static final Logger log = LoggerFactory.getLogger(ReactorApplication.class);
+	
+	private List<Persona> personas = List.of(
+			new Persona(Long.valueOf(1), "Roberto", Integer.valueOf(61)),
+			new Persona(Long.valueOf(2), "Olga", Integer.valueOf(58)),
+			new Persona(Long.valueOf(3), "Ana Luz", Integer.valueOf(31)),
+			new Persona(Long.valueOf(4), "Anabella", Integer.valueOf(27))
+			);
+
+	
+	@Autowired
+	private Creation creation;
+	
+	@Autowired
+	private Transformation transformation;
+	
+	@Autowired
+	private Filtration filtration;
+	
+	@Autowired
+	private Combination combination;
+	
+	@Autowired
+	private ErrorOn errorOn;
+	
+	@Autowired
+	private Conditional conditional;
+	
+	@Autowired
+	private Matematics matematics;
 
 	public static void main(String[] args) {
 		SpringApplication.run(ReactorApplication.class, args);
@@ -34,23 +68,41 @@ public class ReactorApplication implements CommandLineRunner {
 		flux();
 		fluxMono();
 		
-		Creation creation = new Creation();
 		creation.range();
 		creation.repeat();
 		
-		Transformation transformation = new Transformation();
 		transformation.map();
 		transformation.flatMap();
 		transformation.groupBy();
 		transformation.doOnNext();
 		
-		Filtration filtration = new Filtration();
 		filtration.filter();
 		filtration.distinct();
 		filtration.take();
 		filtration.takeLast();
 		filtration.skip();
 		filtration.skipLast();
+		
+		combination.merge();
+		combination.mergeWith();
+		combination.zip();
+		combination.zipWith();
+		
+		// errorOn.retry(); 
+		errorOn.onErrrorReturn();
+		errorOn.onErrorResume();
+		// errorOn.onErrorMap();
+		
+		conditional.defaultIfEmpty();
+		conditional.takeUntil();
+		conditional.timeOut();
+		
+		matematics.average();
+		matematics.count();
+		matematics.min();
+		matematics.max();
+		matematics.sum();
+		matematics.summarizing();
 	}
 	
 	public void reactor() {
@@ -71,23 +123,10 @@ public class ReactorApplication implements CommandLineRunner {
 	}
 	
 	public void flux() {
-		List<Persona> personas = List.of(
-				new Persona(Long.valueOf(1), "Roberto", Integer.valueOf(61)),
-				new Persona(Long.valueOf(2), "Olga", Integer.valueOf(58)),
-				new Persona(Long.valueOf(3), "Ana Luz", Integer.valueOf(31)),
-				new Persona(Long.valueOf(4), "Anabella", Integer.valueOf(27))
-				);
 		Flux.fromIterable(personas).subscribe(p -> log.info("[Flux]: " + p));
 	}
 	
 	public void fluxMono() {
-		List<Persona> personas = List.of(
-				new Persona(Long.valueOf(1), "Roberto", Integer.valueOf(61)),
-				new Persona(Long.valueOf(2), "Olga", Integer.valueOf(58)),
-				new Persona(Long.valueOf(3), "Ana Luz", Integer.valueOf(31)),
-				new Persona(Long.valueOf(4), "Anabella", Integer.valueOf(27))
-				);
-
 		Flux<Persona> fx = Flux.fromIterable(personas);
 		fx.collectList().subscribe(lista -> log.info("[FluxToMono]: " + lista));
 	}

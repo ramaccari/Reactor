@@ -1,28 +1,32 @@
-package com.main.operator.creation;
+package com.main.reactor.creation;
 
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import com.main.model.Persona;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+@Service
 public class Creation {
 
 	private static final Logger log = LoggerFactory.getLogger(Creation.class);
 	
+	private List<Persona> personas = List.of(
+			new Persona(Long.valueOf(1), "Roberto", Integer.valueOf(61)),
+			new Persona(Long.valueOf(2), "Olga", Integer.valueOf(58)),
+			new Persona(Long.valueOf(3), "Ana Luz", Integer.valueOf(31)),
+			new Persona(Long.valueOf(4), "Anabella", Integer.valueOf(27))
+			);
+
+	
 	public void justFrom() {
 		Mono.just(new Persona(Long.valueOf(1), "Mito", Integer.valueOf(29)));
 
-		List<Persona> personas = List.of(
-				new Persona(Long.valueOf(1), "Roberto", Integer.valueOf(61)),
-				new Persona(Long.valueOf(2), "Olga", Integer.valueOf(58)),
-				new Persona(Long.valueOf(3), "Ana Luz", Integer.valueOf(31)),
-				new Persona(Long.valueOf(4), "Anabella", Integer.valueOf(27))
-				);
 		Flux.fromIterable(personas);
 	}
 	
@@ -42,12 +46,6 @@ public class Creation {
 			.repeat(3)
 			.subscribe(p -> log.info("[Mono repet(3)]: " + p));
 
-		List<Persona> personas = List.of(
-				new Persona(Long.valueOf(1), "Roberto", Integer.valueOf(61)),
-				new Persona(Long.valueOf(2), "Olga", Integer.valueOf(58)),
-				new Persona(Long.valueOf(3), "Ana Luz", Integer.valueOf(31)),
-				new Persona(Long.valueOf(4), "Anabella", Integer.valueOf(27))
-				);
 		Flux.fromIterable(personas)
 			.repeat(3)
 			.subscribe(p -> log.info("[Flux repet(3)]: " + p));
